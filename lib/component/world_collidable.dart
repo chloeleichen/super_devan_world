@@ -7,7 +7,7 @@ class WorldCollidable extends PositionComponent
   WorldCollidable (
       TiledObject obj
       ){
-    //debugMode = true;
+    // debugMode = true;
     collidableType = CollidableType.passive;
     if (obj.isEllipse){
       addHitbox(HitboxCircle());

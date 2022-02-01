@@ -12,6 +12,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
     with HasGameRef<T>,  HasHitboxes, Collidable {
   final JoystickComponent joystick;
   bool _collisionActive = false;
+  double _char_width = 29;
   Vector2 _lastValidPosition = Vector2(0, 0);
 
   Devan(this.joystick)
@@ -21,6 +22,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
     priority: 1,
     anchor: Anchor.center, current: DevanState.left
   ){
+    // debugMode = true;
     addHitbox(HitboxCircle());
   }
 
@@ -31,7 +33,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
       'player_spritesheet.png',
       SpriteAnimationData.sequenced(
         amount: 4,
-        textureSize: Vector2(29, 32.0),
+        textureSize: Vector2(_char_width, 32.0),
         texturePosition: Vector2(0, 32*1),
         stepTime: 0.15,
       ),
@@ -41,7 +43,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
       'player_spritesheet.png',
       SpriteAnimationData.sequenced(
         amount: 4,
-        textureSize: Vector2(29, 32.0),
+        textureSize: Vector2(_char_width, 32.0),
         texturePosition: Vector2(0, 32*3),
         stepTime: 0.15,
       ),
@@ -51,7 +53,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
       'player_spritesheet.png',
       SpriteAnimationData.sequenced(
         amount: 4,
-        textureSize: Vector2(29, 32.0),
+        textureSize: Vector2(_char_width, 32.0),
         texturePosition: Vector2(0, 32*2),
         stepTime: 0.15,
       ),
@@ -61,7 +63,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
       'player_spritesheet.png',
       SpriteAnimationData.sequenced(
         amount: 4,
-        textureSize: Vector2(29, 32.0),
+        textureSize: Vector2(_char_width, 32.0),
         texturePosition: Vector2(0, 0),
         stepTime: 0.15,
       ),
@@ -71,7 +73,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
       'player_spritesheet.png',
       SpriteAnimationData.sequenced(
         amount: 1,
-        textureSize: Vector2(29, 32.0),
+        textureSize: Vector2(_char_width, 32.0),
         texturePosition: Vector2(0, 0),
         stepTime: 0.15,
         loop: false
@@ -163,6 +165,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
         velocity = Vector2(-1, 1);
         break;
     }
+
     position.add(velocity/2 * 250 * dt);
   }
 }

@@ -16,6 +16,7 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables{
   Future<void> onLoad() async {
     await images.loadAll(['heart.png']);
     await add(_world);
+    add(ScreenCollidable());
 
     final knobPaint = BasicPalette.white.withAlpha(200).paint();
     final backgroundPaint = BasicPalette.white.withAlpha(100).paint();
