@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/painting.dart';
+import 'package:super_devan_world/component/enemy.dart';
+import 'package:super_devan_world/game/audio_player.dart';
+import 'package:super_devan_world/overlays/game_over_menu.dart';
 import '../component/bullet.dart';
 import '../component/command.dart';
 import '../component/health.dart';
@@ -14,12 +17,14 @@ import 'enemy_manager.dart';
 
 class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappables{
   late final Devan _player;
-  late  Health _health;
+  late final EnemyManager _enemyManager;
+  late  final Health _health;
   late final JoystickComponent _joystick;
   late SpriteSheet _healthSpriteSheet;
   late TextComponent _expText;
   final World _world = World();
   late SpriteAnimationComponent animationComponent;
+  late AudioPlayer _audioPlayer;
 
   final _commandList = List<Command>.empty(growable: true);
   final _addLaterCommandList = List<Command>.empty(growable: true);
@@ -29,6 +34,8 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
   Future<void> onLoad() async {
     await images.loadAll(['heart.png', 'bee/idle.png', 'bee/hit.png', 'bullet.png']);
     await add(_world);
+    _audioPlayer = AudioPlayer();
+    add(_audioPlayer);
     add(ScreenCollidable());
 
     final knobPaint = BasicPalette.white.withAlpha(200).paint();
@@ -46,12 +53,12 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
     add(_player);
     add(_joystick);
 
-    EnemyManager enemyManager = EnemyManager();
-    add(enemyManager);
+    _enemyManager = EnemyManager();
+    add(_enemyManager);
 
     _healthSpriteSheet = SpriteSheet.fromColumnsAndRows(
         image: images.fromCache('heart.png'),
-        columns: 3,
+        columns: 5,
         rows: 1
     );
 
@@ -59,25 +66,35 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
     Health(sprite: _healthSpriteSheet.getSpriteById(0));
 
     final _regular = TextPaint(
-      style: TextStyle(color: BasicPalette.white.color),
+      style: TextStyle(
+          color: Colors.white,
+          fontFamily: 'rowdies',
+          shadows: [
+            Shadow(
+              blurRadius: 10.0,
+              color: Colors.black,
+              offset: Offset(0, 0)
+            )
+          ]
+      ),
     );
 
     _expText = TextComponent(
-      text: 'Exp: 0',
+      text: '0',
       textRenderer: _regular,
     )..positionType = PositionType.viewport;
 
     final speedWithMargin = HudMarginComponent(
       margin: const EdgeInsets.only(
-        top: 25,
-        left: 25,
+        top: 20,
+        left: 19,
       ),
     )..add(_expText);
 
     final healthWithMargin = HudMarginComponent(
       margin: const EdgeInsets.only(
-        top: 45,
-        left: 25,
+        top: 50,
+        left: 17,
       ),
     )..add(_health);
 
@@ -95,6 +112,7 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
   @override
   void onTapDown(int pointerId, TapDownInfo info){
     super.onTapDown(pointerId, info);
+
     if (isTappingOnJoystick(info.eventPosition.global)){
       return;
     }
@@ -105,10 +123,13 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
     );
     bullet.anchor = Anchor.center;
     add(bullet);
+    _audioPlayer.playBulletSound();
   }
 
   @override
   void update(double dt){
+    super.update(dt);
+
     _commandList.forEach((command) {
       children.forEach((component) {
         command.run(component);
@@ -118,13 +139,48 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
     _commandList.addAll(_addLaterCommandList);
     _addLaterCommandList.clear();
 
+    _expText.text = '${_player.exp}';
+    final int spriteId = 4 - (_player.health/2).toInt();
+    _health.sprite = _healthSpriteSheet.getSpriteById(spriteId);
+    if(_player.health <= 0 && (!camera.shaking)){
+      this.pauseEngine();
+      this.overlays.add(GameOverMenu.ID);
+    }
+  }
 
-    super.update(dt);
-    _expText.text = 'Exp: ${_player.exp}';
-    _health.sprite = _healthSpriteSheet.getSpriteById(1);
+  // This method gets called when game instance gets attached
+  // to Flutter's widget tree.
+  @override
+  void onAttach() {
+    _audioPlayer.startBgmMusic();
+    super.onAttach();
+  }
+
+  @override
+  void onDetach() {
+    _audioPlayer.stopBgmMusic();
+    super.onDetach();
   }
 
   void addCommand(Command command){
     _addLaterCommandList.add(command);
+  }
+
+  void reset() {
+    // First reset player, enemy manager and power-up manager .
+    _player.reset();
+    _enemyManager.reset();
+
+    // Now remove all the enemies, bullets and power ups
+    // from the game world. Note that, we are not calling
+    // Enemy.destroy() because it will unnecessarily
+    // run explosion effect and increase players score.
+    children.whereType<Enemy>().forEach((enemy) {
+      enemy.removeFromParent();
+    });
+
+    children.whereType<Bullet>().forEach((bullet) {
+      bullet.removeFromParent();
+    });
   }
 }

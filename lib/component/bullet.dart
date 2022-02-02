@@ -23,7 +23,6 @@ class Bullet extends SpriteComponent with HasHitboxes, Collidable{
   @override
   void onMount() {
     super.onMount();
-    debugMode = true;
     addHitbox(HitboxCircle(size: Vector2.all(10)));
   }
 

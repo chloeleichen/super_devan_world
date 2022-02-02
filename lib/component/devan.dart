@@ -17,9 +17,9 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
   final JoystickComponent joystick;
   bool _collisionActive = false;
   double _char_width = 29;
-  Vector2 _lastValidPosition = Vector2(0, 0);
+  late Vector2 _lastValidPosition;
   Direction direction = Direction.down;
-  int _health = 5;
+  int _health = 8;
   int _exp = 0;
 
   int get exp => _exp;
@@ -28,11 +28,12 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
   Devan(this.joystick)
       : super(
     position: Vector2(1500, 1500),
-    size: Vector2.all(48.0),
+    size: Vector2(43.5, 48),
     priority: 1,
     anchor: Anchor.center, current: DevanState.left
   ){
     // debugMode = true;
+    _lastValidPosition = position;
     addHitbox(HitboxCircle());
   }
 
@@ -112,6 +113,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
         bounceOff();
       }
       if (other is Enemy){
+        gameRef.camera.shake(intensity: 1, duration: 0.1);
         _health -= 1;
       }
       if(_health <= 0){
@@ -194,5 +196,13 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
 
   void addToExp(int points){
     _exp += points;
+  }
+
+  void reset() {
+    _exp = 0;
+    _health = 8;
+    position = Vector2(1500, 1500);
+    _lastValidPosition = Vector2(1500, 1500);
+    _collisionActive = false;
   }
 }

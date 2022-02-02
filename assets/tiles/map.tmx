@@ -68,7 +68,7 @@
    eJzt2jEKwkAURdGBWY3LsIhaqZVmc5bptNOtiO4mH5mkSqc4Uc6BR7rhc+ukxOCcU7rk2lfMzzWa3HQBAAAAAAAAAIC/tah9AD/l5H+ySV3pco/vI/bU6WUVHdZlG01G22ixK9vrMjpEi2NZqwsAAAAAAPCmpvYBAPAlyw+90wOfDgsu
   </data>
  </layer>
- <objectgroup id="7" name="Collision">
+ <objectgroup id="7" name="Collision" visible="0">
   <object id="93" x="1014.3" y="2.08943" width="148.903" height="172.863"/>
   <object id="94" x="982.735" y="183.241" width="150.801" height="283.699"/>
   <object id="97" x="982.361" y="686.727" width="85.0806" height="55.0421"/>

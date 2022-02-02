@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 import 'package:super_devan_world/component/enemy.dart';
 
 class EnemyManager extends Component with HasGameRef{
@@ -24,7 +25,8 @@ class EnemyManager extends Component with HasGameRef{
       Vector2(2240, 2240) - initialSize / 2,
     );
     Enemy enemy = Enemy(
-      position:position
+      position:position,
+      onDestroyed:onEnemyDestroyed
     );
     gameRef.add(enemy);
     enemyCount +=1;
@@ -45,5 +47,13 @@ class EnemyManager extends Component with HasGameRef{
   void update(double dt){
     super.update(dt);
     _timer.update(dt);
+  }
+
+  void reset() {
+    _timer.stop();
+    _timer.start();
+  }
+  void onEnemyDestroyed(){
+    enemyCount -=1;
   }
 }
