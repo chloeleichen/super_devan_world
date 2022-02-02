@@ -1,19 +1,29 @@
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/painting.dart';
-import 'package:super_devan_world/component/bullet.dart';
+import '../component/bullet.dart';
+import '../component/command.dart';
+import '../component/health.dart';
 import '../component/world.dart';
 import '../component/devan.dart';
 import 'enemy_manager.dart';
 
 class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappables{
   late final Devan _player;
+  late  Health _health;
   late final JoystickComponent _joystick;
+  late SpriteSheet _healthSpriteSheet;
+  late TextComponent _expText;
   final World _world = World();
   late SpriteAnimationComponent animationComponent;
+
+  final _commandList = List<Command>.empty(growable: true);
+  final _addLaterCommandList = List<Command>.empty(growable: true);
+
 
   @override
   Future<void> onLoad() async {
@@ -38,6 +48,41 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
 
     EnemyManager enemyManager = EnemyManager();
     add(enemyManager);
+
+    _healthSpriteSheet = SpriteSheet.fromColumnsAndRows(
+        image: images.fromCache('heart.png'),
+        columns: 3,
+        rows: 1
+    );
+
+    _health =
+    Health(sprite: _healthSpriteSheet.getSpriteById(0));
+
+    final _regular = TextPaint(
+      style: TextStyle(color: BasicPalette.white.color),
+    );
+
+    _expText = TextComponent(
+      text: 'Exp: 0',
+      textRenderer: _regular,
+    )..positionType = PositionType.viewport;
+
+    final speedWithMargin = HudMarginComponent(
+      margin: const EdgeInsets.only(
+        top: 25,
+        left: 25,
+      ),
+    )..add(_expText);
+
+    final healthWithMargin = HudMarginComponent(
+      margin: const EdgeInsets.only(
+        top: 45,
+        left: 25,
+      ),
+    )..add(_health);
+
+    add(speedWithMargin);
+    add(healthWithMargin);
   }
 
   bool isTappingOnJoystick(Vector2 position){
@@ -60,5 +105,26 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
     );
     bullet.anchor = Anchor.center;
     add(bullet);
+  }
+
+  @override
+  void update(double dt){
+    _commandList.forEach((command) {
+      children.forEach((component) {
+        command.run(component);
+      });
+    });
+    _commandList.clear();
+    _commandList.addAll(_addLaterCommandList);
+    _addLaterCommandList.clear();
+
+
+    super.update(dt);
+    _expText.text = 'Exp: ${_player.exp}';
+    _health.sprite = _healthSpriteSheet.getSpriteById(1);
+  }
+
+  void addCommand(Command command){
+    _addLaterCommandList.add(command);
   }
 }

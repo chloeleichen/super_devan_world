@@ -6,14 +6,16 @@ import 'package:flame/geometry.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:super_devan_world/component/bullet.dart';
+import 'package:super_devan_world/component/command.dart';
 import 'package:super_devan_world/component/devan.dart';
+import 'package:super_devan_world/game/devan_world.dart';
 
 enum EnemyState {
   hit, idle
 }
 
 class Enemy<T extends FlameGame> extends SpriteAnimationGroupComponent
-    with HasGameRef<T>,  HasHitboxes, Collidable {
+    with HasGameRef<DevanWorld>,  HasHitboxes, Collidable {
   bool _collisionActive = false;
   Random random = Random();
 
@@ -71,7 +73,10 @@ class Enemy<T extends FlameGame> extends SpriteAnimationGroupComponent
     }
     if (other is ScreenCollidable || other is Bullet){
       if (other is Bullet){
-        print('hit');
+        final command = Command<Devan>(action: (player){
+          player.addToExp(1);
+        });
+        gameRef.addCommand(command);
       }
       removeFromParent();
     }

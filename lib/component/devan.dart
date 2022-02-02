@@ -3,6 +3,7 @@ import 'package:flame/game.dart';
 import 'package:flame/geometry.dart';
 import 'package:meta/meta.dart';
 import 'package:super_devan_world/component/bullet.dart';
+import 'package:super_devan_world/component/enemy.dart';
 import 'package:super_devan_world/component/world_collidable.dart';
 import 'package:super_devan_world/helper/direction.dart';
 
@@ -18,6 +19,11 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
   double _char_width = 29;
   Vector2 _lastValidPosition = Vector2(0, 0);
   Direction direction = Direction.down;
+  int _health = 5;
+  int _exp = 0;
+
+  int get exp => _exp;
+  int get health => _health;
 
   Devan(this.joystick)
       : super(
@@ -105,6 +111,12 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
         _collisionActive = true;
         bounceOff();
       }
+      if (other is Enemy){
+        _health -= 1;
+      }
+      if(_health <= 0){
+        _health = 0;
+      }
   }
 
   @override
@@ -178,5 +190,9 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
         break;
     }
     position.add(velocity/2 * 250 * dt);
+  }
+
+  void addToExp(int points){
+    _exp += points;
   }
 }
