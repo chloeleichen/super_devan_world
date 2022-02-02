@@ -2,11 +2,14 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/geometry.dart';
 import 'package:meta/meta.dart';
+import 'package:super_devan_world/component/bullet.dart';
 import 'package:super_devan_world/component/world_collidable.dart';
+import 'package:super_devan_world/helper/direction.dart';
 
 enum DevanState {
   left, right, up, down, upLeft, upRight, downLeft, downRight, idle
 }
+
 
 class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
     with HasGameRef<T>,  HasHitboxes, Collidable {
@@ -14,6 +17,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
   bool _collisionActive = false;
   double _char_width = 29;
   Vector2 _lastValidPosition = Vector2(0, 0);
+  Direction direction = Direction.down;
 
   Devan(this.joystick)
       : super(
@@ -96,16 +100,16 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
-    if (other is WorldCollidable || other is ScreenCollidable){
-      if(!_collisionActive){
+    super.onCollision(intersectionPoints, other);
+      if(!_collisionActive && other is! Bullet){
         _collisionActive = true;
         bounceOff();
       }
-    }
   }
 
   @override
   void onCollisionEnd(Collidable other) {
+    super.onCollisionEnd(other);
     _collisionActive = false;
   }
 
@@ -133,39 +137,46 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
     Vector2 velocity = Vector2(0, 0);
     switch(joystick.direction){
       case JoystickDirection.down:
+        direction =  Direction.down;
         current = DevanState.down;
         velocity = Vector2(1, 1);
         break;
       case JoystickDirection.up:
+        direction =  Direction.up;
         current = DevanState.up;
         velocity = Vector2(0, -1);
         break;
       case JoystickDirection.left:
+        direction =  Direction.left;
         current = DevanState.left;
         velocity = Vector2(-1, 0);
         break;
       case JoystickDirection.right:
+        direction =  Direction.right;
         current = DevanState.right;
         velocity = Vector2(1, 0);
         break;
       case JoystickDirection.upLeft:
+        direction =  Direction.left;
         current = DevanState.upLeft;
         velocity = Vector2(-1, -1);
         break;
       case JoystickDirection.upRight:
+        direction =  Direction.right;
         current = DevanState.upRight;
         velocity = Vector2(1, -1);
         break;
       case JoystickDirection.downRight:
+        direction =  Direction.right;
         current = DevanState.downRight;
         velocity = Vector2(1, 1);
         break;
       case JoystickDirection.downLeft:
+        direction =  Direction.left;
         current = DevanState.downLeft;
         velocity = Vector2(-1, 1);
         break;
     }
-
     position.add(velocity/2 * 250 * dt);
   }
 }
