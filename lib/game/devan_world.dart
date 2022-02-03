@@ -120,7 +120,7 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
       return;
     }
     Bullet bullet = Bullet(
-        direction: _joystick.relativeDelta,
+        direction: _player.direction,
         position: _player.position,
         sprite: Sprite(images.fromCache('bullet.png'))
     );

@@ -106,6 +106,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  flame_lint:
+    dependency: "direct main"
+    description:
+      name: flame_lint
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   flame_tiled:
     dependency: "direct main"
     description:

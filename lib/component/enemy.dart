@@ -13,40 +13,32 @@ enum EnemyState {
 
 class Enemy<T extends FlameGame> extends Creature {
   late void Function() _onDestroyed;
-  final Vector2 _charSize = Vector2(36, 34);
-  Enemy({Vector2? position, required void Function() onDestroyed})
+  late SpriteAnimation _idle;
+  late SpriteAnimation _hit;
+
+  Enemy({
+  Vector2? position,
+  required void Function() onDestroyed,
+  required SpriteAnimation idle,
+  required SpriteAnimation hit
+  })
       : super(
       onDestroyed: onDestroyed,
   ){
     _onDestroyed =  onDestroyed;
     position = position;
     size = Vector2(16, 16);
+    _idle = idle;
+    _hit = hit;
+    animations = {
+      EnemyState.hit: _hit,
+      EnemyState.idle: _idle,
+    };
   }
 
   @mustCallSuper
   @override
   Future<void> onLoad() async {
-    final idle = await gameRef.loadSpriteAnimation(
-      'bee/idle.png',
-      SpriteAnimationData.sequenced(
-        amount: 6,
-        textureSize: _charSize,
-        stepTime: 0.15,
-      ),
-    );
-
-    final hit = await gameRef.loadSpriteAnimation(
-      'bee/hit.png',
-      SpriteAnimationData.sequenced(
-        amount: 6,
-        textureSize: _charSize,
-        stepTime: 0.15,
-      ),
-    );
-    animations = {
-      EnemyState.hit: hit,
-      EnemyState.idle: idle,
-    };
     current = EnemyState.idle;
     super.onLoad();
   }
@@ -66,5 +58,10 @@ class Enemy<T extends FlameGame> extends Creature {
         _onDestroyed();
         removeFromParent();
     }
+  }
+  @override
+  void onCollisionEnd(Collidable other){
+    super.onCollisionEnd(other);
+    current = EnemyState.idle;
   }
 }

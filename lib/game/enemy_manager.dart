@@ -1,7 +1,5 @@
 import 'dart:math';
-
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
 import 'package:super_devan_world/component/enemy.dart';
 
 class EnemyManager extends Component with HasGameRef{
@@ -13,7 +11,25 @@ class EnemyManager extends Component with HasGameRef{
     _timer = Timer(1, onTick: _spawEnemy, repeat: true);
   }
 
-  void _spawEnemy(){
+  void _spawEnemy() async{
+    final idle = await gameRef.loadSpriteAnimation(
+      'bee/idle.png',
+      SpriteAnimationData.sequenced(
+        amount: 6,
+        textureSize: Vector2(36, 34),
+        stepTime: 0.15,
+      ),
+    );
+
+    final hit = await gameRef.loadSpriteAnimation(
+      'bee/hit.png',
+      SpriteAnimationData.sequenced(
+        amount: 6,
+        textureSize: Vector2(36, 34),
+        stepTime: 0.15,
+      ),
+    );
+
     if (enemyCount >=max_enemy){
       return;
     }
@@ -26,7 +42,9 @@ class EnemyManager extends Component with HasGameRef{
     );
     Enemy enemy = Enemy(
       position:position,
-      onDestroyed:onEnemyDestroyed
+      onDestroyed:onEnemyDestroyed,
+      idle: idle,
+      hit: hit
     );
     gameRef.add(enemy);
     enemyCount +=1;

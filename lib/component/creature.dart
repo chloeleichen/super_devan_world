@@ -25,7 +25,9 @@ class Creature<T extends FlameGame> extends SpriteAnimationGroupComponent
     velocity = Vector2((random.nextInt(2)).toDouble(), (random.nextInt(2)).toDouble());
     addHitbox(HitboxCircle());
     _onDestroyed = onDestroyed;
+    angle = -atan2(velocity.x, velocity.y);
   }
+
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
@@ -33,6 +35,11 @@ class Creature<T extends FlameGame> extends SpriteAnimationGroupComponent
     if (other is Devan){
       bounceOff();
     }
+  }
+
+  @override
+  void onCollisionEnd(Collidable other){
+    super.onCollisionEnd(other);
   }
 
   void bounceOff() {
@@ -52,6 +59,7 @@ class Creature<T extends FlameGame> extends SpriteAnimationGroupComponent
     var v = Vector2(x, y);
     if (!v.isZero()){
       velocity = v;
+      angle = -atan2(velocity.x, velocity.y);
     }
   }
 

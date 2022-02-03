@@ -1,20 +1,17 @@
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:super_devan_world/component/enemy.dart';
-import 'package:super_devan_world/component/world_collidable.dart';
 import 'package:super_devan_world/helper/direction.dart';
-
-import 'devan.dart';
 
 class Bullet extends SpriteComponent with HasHitboxes, Collidable{
   final double _speed = 450;
-  Vector2 _direction = Vector2(0, 1);
+  late Direction _direction;
 
   Bullet({
     Sprite? sprite,
     Vector2? position,
     Vector2? size,
-    required Vector2 direction,
+    required Direction direction,
 }) : super(sprite: sprite, position: position, size: size){
     _direction = direction;
     position = position;
@@ -36,10 +33,22 @@ class Bullet extends SpriteComponent with HasHitboxes, Collidable{
 
   @override
   void update(double dt) {
-    if(_direction.isZero()){
-      _direction = Vector2(0, 1);
+    var velocity = Vector2(1, 1);
+    switch (_direction){
+      case (Direction.up):
+        velocity = Vector2(0, -1);
+        break;
+      case (Direction.down):
+        velocity = Vector2(0, 1);
+        break;
+      case (Direction.left):
+        velocity = Vector2(-1, 0);
+        break;
+      case (Direction.right):
+        velocity = Vector2(1, 0);
+        break;
     }
-    position.add(_direction*_speed * dt);
+    position.add(velocity*_speed * dt);
     super.update(dt);
   }
 }
