@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.super_devan_world">
+    package="com.chloe.super_devan_world">
    <application
         android:label="super_devan_world"
         android:name="${applicationName}"

@@ -66,7 +66,7 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
     Health(sprite: _healthSpriteSheet.getSpriteById(0));
 
     final _regular = TextPaint(
-      style: TextStyle(
+      style: const TextStyle(
           color: Colors.white,
           fontFamily: 'rowdies',
           shadows: [
@@ -140,11 +140,11 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
     _addLaterCommandList.clear();
 
     _expText.text = '${_player.exp}';
-    final int spriteId = 4 - (_player.health/2).toInt();
+    final int spriteId = 4 - _player.health~/2;
     _health.sprite = _healthSpriteSheet.getSpriteById(spriteId);
     if(_player.health <= 0 && (!camera.shaking)){
-      this.pauseEngine();
-      this.overlays.add(GameOverMenu.ID);
+      pauseEngine();
+      overlays.add(GameOverMenu.ID);
     }
   }
 
@@ -152,13 +152,13 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
   // to Flutter's widget tree.
   @override
   void onAttach() {
-    _audioPlayer.startBgmMusic();
+    // _audioPlayer.startBgmMusic();
     super.onAttach();
   }
 
   @override
   void onDetach() {
-    _audioPlayer.stopBgmMusic();
+    // _audioPlayer.stopBgmMusic();
     super.onDetach();
   }
 
