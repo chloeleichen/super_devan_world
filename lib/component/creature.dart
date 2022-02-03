@@ -13,10 +13,8 @@ class Creature<T extends FlameGame> extends SpriteAnimationGroupComponent
   late void Function() _onDestroyed;
   double _speed = 50;
 
-  Creature({Vector2? position, required void Function() onDestroyed, double? speed})
+  Creature({ required void Function() onDestroyed, double? speed })
       : super(
-      position: position,
-      size: Vector2.all(16),
       priority: 1,
       anchor: Anchor.center,
   ){

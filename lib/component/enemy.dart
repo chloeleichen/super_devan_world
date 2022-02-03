@@ -13,13 +13,14 @@ enum EnemyState {
 
 class Enemy<T extends FlameGame> extends Creature {
   late void Function() _onDestroyed;
-  Vector2 _charSize = Vector2(36, 34);
+  final Vector2 _charSize = Vector2(36, 34);
   Enemy({Vector2? position, required void Function() onDestroyed})
       : super(
-      position: position,
       onDestroyed: onDestroyed,
   ){
     _onDestroyed =  onDestroyed;
+    position = position;
+    size = Vector2(16, 16);
   }
 
   @mustCallSuper
@@ -46,6 +47,7 @@ class Enemy<T extends FlameGame> extends Creature {
       EnemyState.hit: hit,
       EnemyState.idle: idle,
     };
+    current = EnemyState.idle;
     super.onLoad();
   }
 

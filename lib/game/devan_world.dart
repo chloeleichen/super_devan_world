@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame_tiled/flame_tiled.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
@@ -22,7 +23,7 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
   late final JoystickComponent _joystick;
   late SpriteSheet _healthSpriteSheet;
   late TextComponent _expText;
-  final World _world = World();
+  late World _world;
   late SpriteAnimationComponent animationComponent;
   late AudioPlayer _audioPlayer;
 
@@ -32,7 +33,9 @@ class DevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappab
 
   @override
   Future<void> onLoad() async {
-    await images.loadAll(['heart.png', 'bee/idle.png', 'bee/hit.png', 'bullet.png']);
+    await images.loadAll(['heart.png', 'bee/idle.png', 'bee/hit.png', 'bullet.png', 'map.png']);
+    final _tiledMap = await TiledComponent.load('map.tmx', Vector2.all(32));
+    _world = World(_tiledMap);
     await add(_world);
     _audioPlayer = AudioPlayer();
     add(_audioPlayer);
