@@ -1,8 +1,7 @@
 import 'package:flame/components.dart';
-import 'package:flame/game.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'world_collidable.dart';
-import 'package:tiled/tiled.dart' show ObjectGroup, TiledObject;
+import 'package:tiled/tiled.dart' show ObjectGroup;
 
 class World extends SpriteComponent with HasGameRef, HasHitboxes, Collidable {
   final TiledComponent tiledMap;

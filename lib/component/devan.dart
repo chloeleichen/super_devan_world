@@ -1,41 +1,42 @@
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/geometry.dart';
+import 'package:flame/sprite.dart';
 import 'package:meta/meta.dart';
-import 'package:super_devan_world/component/bullet.dart';
 import 'package:super_devan_world/component/enemy.dart';
+import 'package:super_devan_world/component/reward.dart';
+import 'package:super_devan_world/component/world_collidable.dart';
+import 'package:super_devan_world/helper/creature_type.dart';
 import 'package:super_devan_world/helper/direction.dart';
-
-enum DevanState {
-  left,
-  right,
-  up,
-  down,
-  upLeft,
-  upRight,
-  downLeft,
-  downRight,
-  idle_down,
-  idle_up,
-  idle_left,
-  idle_right
-}
 
 const int leftIndex = 1;
 const int rightIndex = 3;
 const int upIndex = 2;
 const int downIndex = 0;
 
+const int maxHealth = 8;
 
-class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
+
+class Devan<T extends FlameGame> extends SpriteAnimationComponent
     with HasGameRef<T>,  HasHitboxes, Collidable {
   final JoystickComponent joystick;
   bool _collisionActive = false;
-  double _char_width = 29;
-  double _char_height = 32.0;
+  final double _charWidth = 29;
+  final double _charHeight = 32.0;
+  late final SpriteAnimation _runDownAnimation;
+  late final SpriteAnimation _runLeftAnimation;
+  late final SpriteAnimation _runUpAnimation;
+  late final SpriteAnimation _runRightAnimation;
+
+  late final SpriteAnimation _idleDownAnimation;
+  late final SpriteAnimation _idleLeftAnimation;
+  late final SpriteAnimation _idleUpAnimation;
+  late final SpriteAnimation _idleRightAnimation;
+  final double _animationSpeed = 0.15;
+
   late Vector2 _lastValidPosition;
   Direction _direction = Direction.down;
-  int _health = 8;
+  int _health = maxHealth;
   int _exp = 0;
 
   int get exp => _exp;
@@ -46,10 +47,9 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
       : super(
     position: Vector2(1500, 1500),
     size: Vector2(43.5, 48),
-    priority: 1,
-    anchor: Anchor.center, current: DevanState.left
+    anchor: Anchor.center,
   ){
-    // debugMode = true;
+    debugMode = true;
     _lastValidPosition = position;
     addHitbox(HitboxCircle());
   }
@@ -57,117 +57,33 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
   @mustCallSuper
   @override
   Future<void> onLoad() async {
-    final left = await gameRef.loadSpriteAnimation(
-      'player_spritesheet.png',
-      SpriteAnimationData.sequenced(
-        amount: 4,
-        textureSize: Vector2(_char_width, _char_height),
-        texturePosition: Vector2(0, _char_height *leftIndex),
-        stepTime: 0.15,
-      ),
-    );
-
-    final right = await gameRef.loadSpriteAnimation(
-      'player_spritesheet.png',
-      SpriteAnimationData.sequenced(
-        amount: 4,
-        textureSize: Vector2(_char_width, _char_height),
-        texturePosition: Vector2(0, _char_height*rightIndex),
-        stepTime: 0.15,
-      ),
-    );
-
-    final up = await gameRef.loadSpriteAnimation(
-      'player_spritesheet.png',
-      SpriteAnimationData.sequenced(
-        amount: 4,
-        textureSize: Vector2(_char_width, _char_height),
-        texturePosition: Vector2(0, _char_height*upIndex),
-        stepTime: 0.15,
-      ),
-    );
-
-    final down = await gameRef.loadSpriteAnimation(
-      'player_spritesheet.png',
-      SpriteAnimationData.sequenced(
-        amount: 4,
-        textureSize: Vector2(_char_width, _char_height),
-        texturePosition: Vector2(0, _char_height *downIndex),
-        stepTime: 0.15,
-      ),
-    );
-
-    final idle_down = await gameRef.loadSpriteAnimation(
-      'player_spritesheet.png',
-      SpriteAnimationData.sequenced(
-        amount: 1,
-        textureSize: Vector2(_char_width, _char_height),
-        texturePosition: Vector2(0, _char_height*downIndex ),
-        stepTime: double.infinity,
-        loop: false
-      ),
-    );
-    final idle_up = await gameRef.loadSpriteAnimation(
-      'player_spritesheet.png',
-      SpriteAnimationData.sequenced(
-          amount: 1,
-          textureSize: Vector2(_char_width, 32.0),
-          texturePosition: Vector2(0, _char_height*upIndex),
-          stepTime: double.infinity,
-          loop: false
-      ),
-    );
-    final idle_left = await gameRef.loadSpriteAnimation(
-      'player_spritesheet.png',
-      SpriteAnimationData.sequenced(
-          amount: 1,
-          textureSize: Vector2(_char_width, 32.0),
-          texturePosition: Vector2(0, _char_height*leftIndex),
-          stepTime: double.infinity,
-          loop: false
-      ),
-    );
-    final idle_right = await gameRef.loadSpriteAnimation(
-      'player_spritesheet.png',
-      SpriteAnimationData.sequenced(
-          amount: 1,
-          textureSize: Vector2(_char_width, _char_height),
-          texturePosition: Vector2(0, _char_height*rightIndex),
-          stepTime: double.infinity,
-          loop: false
-      ),
-    );
-
-    animations = {
-      DevanState.left: left,
-      DevanState.right: right,
-      DevanState.up: up,
-      DevanState.down: down,
-      DevanState.upLeft: left,
-      DevanState.downLeft: left,
-      DevanState.upRight: right,
-      DevanState.downRight: right,
-      DevanState.idle_down : idle_down,
-      DevanState.idle_up : idle_up,
-      DevanState.idle_left : idle_left,
-      DevanState.idle_right : idle_right,
-    };
+    _loadAnimation();
+    animation = _idleDownAnimation;
     super.onLoad();
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
     super.onCollision(intersectionPoints, other);
-      if(!_collisionActive && other is! Bullet){
+      if(!_collisionActive && (other is WorldCollidable || other is ScreenCollidable)){
         _collisionActive = true;
         bounceOff();
       }
       if (other is Enemy){
-        gameRef.camera.shake(intensity: 1, duration: 0.1);
-        _health -= 1;
+        bounceOff();
+        if(other.type == CreatureType.monster ){
+          _health -= 1;
+        }
+
       }
       if(_health <= 0){
         _health = 0;
+      }
+
+      if(other is Reward){
+        if(health < maxHealth){
+          _health +=1;
+        }
       }
   }
 
@@ -190,16 +106,16 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
   void idlePlayer(){
     switch(_direction){
       case (Direction.down):
-        current = DevanState.idle_down;
+        animation = _idleDownAnimation;
         break;
       case (Direction.up):
-        current = DevanState.idle_up;
+        animation = _idleUpAnimation;
         break;
       case (Direction.left):
-        current = DevanState.idle_left;
+        animation = _idleLeftAnimation;
         break;
       case (Direction.right):
-        current = DevanState.idle_right;
+        animation = _idleRightAnimation;
         break;
       }
   }
@@ -219,42 +135,42 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
         break;
       case JoystickDirection.down:
         _direction =  Direction.down;
-        current = DevanState.down;
+        animation = _runDownAnimation;
         velocity = Vector2(0, 1);
         break;
       case JoystickDirection.up:
         _direction =  Direction.up;
-        current = DevanState.up;
+        animation = _runUpAnimation;
         velocity = Vector2(0, -1);
         break;
       case JoystickDirection.left:
         _direction =  Direction.left;
-        current = DevanState.left;
+        animation = _runLeftAnimation;
         velocity = Vector2(-1, 0);
         break;
       case JoystickDirection.right:
         _direction =  Direction.right;
-        current = DevanState.right;
+        animation = _runRightAnimation;
         velocity = Vector2(1, 0);
         break;
       case JoystickDirection.upLeft:
         _direction =  Direction.left;
-        current = DevanState.upLeft;
+        animation = _runLeftAnimation;
         velocity = Vector2(-1, -1);
         break;
       case JoystickDirection.upRight:
         _direction =  Direction.right;
-        current = DevanState.upRight;
+        animation = _runRightAnimation;
         velocity = Vector2(1, -1);
         break;
       case JoystickDirection.downRight:
         _direction =  Direction.right;
-        current = DevanState.downRight;
+        animation = _runRightAnimation;
         velocity = Vector2(1, 1);
         break;
       case JoystickDirection.downLeft:
         _direction =  Direction.left;
-        current = DevanState.downLeft;
+        animation = _runLeftAnimation;
         velocity = Vector2(-1, 1);
         break;
 
@@ -272,5 +188,33 @@ class Devan<T extends FlameGame> extends SpriteAnimationGroupComponent
     position = Vector2(1500, 1500);
     _lastValidPosition = Vector2(1500, 1500);
     _collisionActive = false;
+  }
+
+  void _loadAnimation(){
+    final spriteSheet = SpriteSheet(
+      image: gameRef.images.fromCache('player_spritesheet.png'),
+      srcSize: Vector2(_charWidth, _charHeight),
+    );
+
+    _runDownAnimation =
+        spriteSheet.createAnimation(row: downIndex, stepTime: _animationSpeed, to: 4);
+
+    _runLeftAnimation =
+        spriteSheet.createAnimation(row: leftIndex, stepTime: _animationSpeed, to: 4);
+
+    _runUpAnimation =
+        spriteSheet.createAnimation(row: upIndex, stepTime: _animationSpeed, to: 4);
+
+    _runRightAnimation =
+        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 4);
+
+    _idleDownAnimation =
+        spriteSheet.createAnimation(row: downIndex, stepTime: _animationSpeed, to: 1);
+    _idleUpAnimation =
+        spriteSheet.createAnimation(row: upIndex, stepTime: _animationSpeed, to: 1);
+    _idleLeftAnimation =
+        spriteSheet.createAnimation(row: leftIndex, stepTime: _animationSpeed, to: 1);
+    _idleRightAnimation =
+        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 1);
   }
 }

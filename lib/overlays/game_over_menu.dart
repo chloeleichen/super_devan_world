@@ -22,7 +22,7 @@ class GameOverMenu extends StatelessWidget {
                 fontSize: 50.0,
                 fontFamily: 'rowdies',
                 color: Colors.red.shade900,
-                shadows: [
+                shadows: const [
                   Shadow(
                     blurRadius: 30.0,
                     color: Colors.white,
@@ -39,7 +39,7 @@ class GameOverMenu extends StatelessWidget {
             child: ElevatedButton(
               style: TextButton.styleFrom(
                 backgroundColor: Colors.orangeAccent,
-                textStyle: TextStyle(
+                textStyle: const TextStyle(
                   color: Colors.white,
                   fontFamily: 'rowdies'
                 ),
@@ -51,7 +51,7 @@ class GameOverMenu extends StatelessWidget {
                 gameRef.reset();
                 gameRef.resumeEngine();
               },
-              child: Text('Restart'),
+              child: const Text('Restart'),
             ),
           ),
         ],

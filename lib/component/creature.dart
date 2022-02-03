@@ -37,11 +37,6 @@ class Creature<T extends FlameGame> extends SpriteAnimationGroupComponent
     }
   }
 
-  @override
-  void onCollisionEnd(Collidable other){
-    super.onCollisionEnd(other);
-  }
-
   void bounceOff() {
     velocity = -velocity;
     position.add(velocity * 10);

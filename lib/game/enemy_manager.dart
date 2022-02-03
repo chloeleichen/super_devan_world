@@ -1,10 +1,11 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:super_devan_world/component/enemy.dart';
+import 'package:super_devan_world/helper/creature_type.dart';
 
 class EnemyManager extends Component with HasGameRef{
   late Timer _timer;
-  int max_enemy = 100;
+  int maxEnemy = 20;
   Random random = Random();
   int enemyCount = 0;
   EnemyManager() : super(){
@@ -30,21 +31,17 @@ class EnemyManager extends Component with HasGameRef{
       ),
     );
 
-    if (enemyCount >=max_enemy){
+    if (enemyCount >=maxEnemy){
       return;
     }
-    Vector2 initialSize = Vector2(32, 32);
-    Vector2 position = Vector2(random.nextDouble() * 2240, random.nextDouble() * 2240);
+    Vector2 position = Vector2( 2230*random.nextDouble(), 2230*random.nextDouble());
 
-    position.clamp(
-      Vector2.zero() + initialSize / 2,
-      Vector2(2240, 2240) - initialSize / 2,
-    );
     Enemy enemy = Enemy(
       position:position,
       onDestroyed:onEnemyDestroyed,
       idle: idle,
-      hit: hit
+      hit: hit,
+      type: CreatureType.bee,
     );
     gameRef.add(enemy);
     enemyCount +=1;
@@ -58,6 +55,7 @@ class EnemyManager extends Component with HasGameRef{
 
   @override
   void onRemove(){
+    super.onRemove();
     _timer.stop();
   }
 
