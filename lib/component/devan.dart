@@ -83,7 +83,12 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
       if (other is CastleColliable){
         return;
       }
-      if(!_collisionActive && (other is WorldCollidable || other is ScreenCollidable)){
+      if(!_collisionActive && (
+        other is WorldCollidable || 
+        other is ScreenCollidable ||
+        other is TombStone||
+        other is Shop ||
+        other is RoadSign)){
         _collisionActive = true;
         bounceOff();
       }
