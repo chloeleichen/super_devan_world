@@ -5,6 +5,7 @@ import 'package:flame/geometry.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'package:super_devan_world/component/boss.dart';
+import 'package:super_devan_world/component/devan_animation.dart';
 import 'package:super_devan_world/component/flying_creature.dart';
 import 'package:super_devan_world/component/mushroom.dart';
 import 'package:super_devan_world/component/reward.dart';
@@ -286,15 +287,16 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
       srcSize: Vector2(_charWidth, _charHeight),
     );
 
-    _runDownAnimation =
-        spriteSheet.createAnimation(row: downIndex, stepTime: _animationSpeed, to: 7);
-    _runLeftAnimation =
-        spriteSheet.createAnimation(row: leftIndex, stepTime: _animationSpeed, to: 7);
-    _runUpAnimation =
-        spriteSheet.createAnimation(row: upIndex, stepTime: _animationSpeed, to: 7);
+    DevanAnimation animations = DevanAnimation(spriteSheet: spriteSheet);
 
+    _runDownAnimation =
+        animations.down;
+    _runLeftAnimation =
+        animations.left;
+    _runUpAnimation =
+        animations.top;
     _runRightAnimation =
-        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 7);
+        animations.right;
 
     _idleDownAnimation =
         spriteSheet.createAnimation(row: downIndex, stepTime: _animationSpeed, to: 7);
