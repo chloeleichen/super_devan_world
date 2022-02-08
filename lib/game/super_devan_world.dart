@@ -141,7 +141,7 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
   // to Flutter's widget tree.
   @override
   void onAttach() {
-    _audioPlayer.startBgmMusic();
+    //_audioPlayer.startBgmMusic();
     timer.start();
     super.onAttach();
   }

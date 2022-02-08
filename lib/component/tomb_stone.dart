@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:super_devan_world/component/devan.dart';
 import 'package:super_devan_world/component/world_collidable.dart';
 import 'package:tiled/tiled.dart';
 
@@ -22,13 +22,16 @@ class TombStone extends WorldCollidable{
   @override
   void onCollision(Set<Vector2> intersectionPoints, Collidable other){
     super.onCollision(intersectionPoints, other);
-    add(_dialog);
-
+    if (other is Devan){
+      add(_dialog);
+    }
   }
 
   @override
   void onCollisionEnd(Collidable other){
     super.onCollisionEnd(other);
-    _dialog.removeFromParent();
+    if (other is Devan){
+      _dialog.removeFromParent();
+    }
   }
 }

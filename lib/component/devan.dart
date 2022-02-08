@@ -8,6 +8,9 @@ import 'package:super_devan_world/component/boss.dart';
 import 'package:super_devan_world/component/flying_creature.dart';
 import 'package:super_devan_world/component/mushroom.dart';
 import 'package:super_devan_world/component/reward.dart';
+import 'package:super_devan_world/component/roadsign.dart';
+import 'package:super_devan_world/component/shop.dart';
+import 'package:super_devan_world/component/tomb_stone.dart';
 import 'package:super_devan_world/component/world_collidable.dart';
 import 'package:super_devan_world/game/audio_player.dart';
 import 'package:super_devan_world/helper/creature_type.dart';
@@ -35,8 +38,8 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   final _thr = Throttling(duration: const Duration(seconds: 1));
   final _thrFast = Throttling(duration: const Duration(milliseconds: 500));
   bool _collisionActive = false;
-  final double _charWidth = 29;
-  final double _charHeight = 32.0;
+  final double _charWidth = 42;
+  final double _charHeight = 64;
   late final SpriteAnimation _runDownAnimation;
   late final SpriteAnimation _runLeftAnimation;
   late final SpriteAnimation _runUpAnimation;
@@ -61,7 +64,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   Devan(this.joystick, this.audioPlayer)
       : super(
     position: Vector2(initX, initY),
-    size: Vector2(43.5, 48),
+    size: Vector2(42, 64),
     anchor: Anchor.center,
   ){
     // debugMode = true;
@@ -284,24 +287,24 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     );
 
     _runDownAnimation =
-        spriteSheet.createAnimation(row: downIndex, stepTime: _animationSpeed, to: 4);
+        spriteSheet.createAnimation(row: downIndex, stepTime: _animationSpeed, to: 7);
     _runLeftAnimation =
-        spriteSheet.createAnimation(row: leftIndex, stepTime: _animationSpeed, to: 4);
+        spriteSheet.createAnimation(row: leftIndex, stepTime: _animationSpeed, to: 7);
     _runUpAnimation =
-        spriteSheet.createAnimation(row: upIndex, stepTime: _animationSpeed, to: 4);
+        spriteSheet.createAnimation(row: upIndex, stepTime: _animationSpeed, to: 7);
 
     _runRightAnimation =
-        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 4);
+        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 7);
 
     _idleDownAnimation =
-        spriteSheet.createAnimation(row: downIndex, stepTime: _animationSpeed, to: 1);
+        spriteSheet.createAnimation(row: downIndex, stepTime: _animationSpeed, to: 7);
     _idleUpAnimation =
-        spriteSheet.createAnimation(row: upIndex, stepTime: _animationSpeed, to: 1);
+        spriteSheet.createAnimation(row: upIndex, stepTime: _animationSpeed, to: 7);
     _idleLeftAnimation =
-        spriteSheet.createAnimation(row: leftIndex, stepTime: _animationSpeed, to: 1);
+        spriteSheet.createAnimation(row: leftIndex, stepTime: _animationSpeed, to: 7);
     _idleRightAnimation =
-        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 1);
+        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 7);
     _deadAnimation =
-        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 1);
+        spriteSheet.createAnimation(row: rightIndex, stepTime: _animationSpeed, to: 7);
   }
 }
