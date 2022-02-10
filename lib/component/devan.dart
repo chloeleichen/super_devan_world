@@ -7,26 +7,22 @@ import 'package:flutter/services.dart';
 import 'package:super_devan_world/component/boss.dart';
 import 'package:super_devan_world/component/flying_creature.dart';
 import 'package:super_devan_world/component/mushroom.dart';
-import 'package:super_devan_world/component/reward.dart';
-import 'package:super_devan_world/component/roadsign.dart';
-import 'package:super_devan_world/component/shop.dart';
-import 'package:super_devan_world/component/tomb_stone.dart';
 import 'package:super_devan_world/component/world_collidable.dart';
 import 'package:super_devan_world/game/audio_player.dart';
 import 'package:super_devan_world/helper/creature_type.dart';
 import 'package:super_devan_world/helper/devan_movement.dart';
 import 'package:super_devan_world/helper/direction.dart';
 import 'package:super_devan_world/helper/mushroom_type.dart';
+import 'package:super_devan_world/helper/world_collidable_type.dart';
 import 'package:throttling/throttling.dart';
 
 import '../controller/devan_animation_controller.dart';
-import 'castle_collidable.dart';
 const int leftIndex = 1;
 const int rightIndex = 3;
 const int upIndex = 2;
 const int downIndex = 0;
-const double initX = 2127.4;
-const double initY = 73.83;
+const double initX = 1870;
+const double initY = 757;
 const int maxHealth = 8;
 
 
@@ -58,7 +54,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     size: Vector2(100, 100),
     anchor: Anchor.center,
   ){
-    debugMode = true;
+    // debugMode = true;
     _lastValidPosition = position;
     addHitbox(HitboxCircle(normalizedRadius: 0.5));
   }
@@ -79,31 +75,38 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     if (_health <=0){
       return;
     }
-      if (other is CastleColliable){
-        return;
-      }
-
-      if(other is WorldCollidable ||
-        other is ScreenCollidable ||
-        other is TombStone||
-        other is Shop ||
-        other is RoadSign){
-        // _movement = DevanMovement.jump;
+      if(other is ScreenCollidable){
+        _movement = DevanMovement.idle;
         _collisionActive = true;
         bounceOff();
       }
+
+      if(other is WorldCollidable){
+        if(other.type == WorldCollidableType.jump){
+          _movement = DevanMovement.jump;
+        }
+        else if(other.type == WorldCollidableType.climb){
+          _movement = DevanMovement.climb;
+        }
+        else{
+          _movement = DevanMovement.idle;
+          _collisionActive = true;
+          bounceOff();
+        }
+      }
+
       if (other is FlyingCreature){
         _movement = DevanMovement.attackSword;
-        _thr.throttle(()=>HapticFeedback.vibrate());
-        bounceOff();
+        other.onHit();
         if(other.type == CreatureType.skull ){
-          _deb.debounce(hurt);
+          // _deb.debounce(hurt);
+          _thr.throttle(()=>audioPlayer.playSwordSound());
         }
       }
       if(other is Boss){
         _movement = DevanMovement.attackSword;
           _thr.throttle(()=>audioPlayer.playSwordSound());
-          _thrFast.throttle(hurt);
+          // _thrFast.throttle(hurt);
       }
 
       if(other is Mushroom && !other.size.isZero()){
@@ -119,7 +122,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
           _deb.debounce(mushroomEffect);
         }
       }
-    animation = _devanActionController.animations[DevanMovement.take]?.direction[_direction];
+    animation = _devanActionController.animations[_movement]?.direction[_direction];
   }
 
   @override

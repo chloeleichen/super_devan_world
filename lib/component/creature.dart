@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/geometry.dart';
-import 'package:super_devan_world/component/castle_collidable.dart';
 import 'package:super_devan_world/game/super_devan_world.dart';
 
 class Creature<T extends FlameGame> extends SpriteAnimationGroupComponent

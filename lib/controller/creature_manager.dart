@@ -5,7 +5,7 @@ import 'package:super_devan_world/helper/creature_type.dart';
 
 class CreatureManager extends Component with HasGameRef{
   late Timer _timer;
-  int maxFlyingCreature = 30;
+  int maxFlyingCreature = 15;
   Random random = Random();
   int flyingCreatureCount = 0;
   CreatureManager() : super(){

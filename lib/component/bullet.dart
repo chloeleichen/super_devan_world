@@ -1,7 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:super_devan_world/component/boss.dart';
-import 'package:super_devan_world/component/castle_collidable.dart';
 import 'package:super_devan_world/component/flying_creature.dart';
 import 'package:super_devan_world/game/super_devan_world.dart';
 import 'package:super_devan_world/helper/creature_type.dart';
@@ -33,7 +32,7 @@ class Bullet extends SpriteComponent with HasHitboxes, Collidable, HasGameRef<Su
   @override
   void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
     super.onCollision(intersectionPoints, other);
-    if(other is ScreenCollidable|| other is CastleColliable){
+    if(other is ScreenCollidable){
       removeFromParent();
     } else if(other is FlyingCreature){
       int point = other.type == CreatureType.skull? 1 : -1;

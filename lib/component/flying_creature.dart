@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:super_devan_world/component/Creature.dart';
 import 'package:super_devan_world/component/bullet.dart';
-import 'package:super_devan_world/component/castle_collidable.dart';
 import 'package:super_devan_world/component/devan.dart';
 import 'package:super_devan_world/helper/creature_type.dart';
 
@@ -58,25 +57,12 @@ class FlyingCreature<T extends FlameGame> extends Creature {
   }
 
   @override
-  void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
-    super.onCollision(intersectionPoints,other);
-    if (other is CastleColliable){
-      removeFromParent();
-      return;
-    }
-    if (other is Devan){
-        bounceOff();
-        current = FlyingCreatureState.hit;
-    }
-    if (other is Bullet){
-        current = FlyingCreatureState.hit;
-        _onDestroyed();
-        removeFromParent();
-    }
-  }
-  @override
   void onCollisionEnd(Collidable other){
     super.onCollisionEnd(other);
     current = FlyingCreatureState.idle;
+  }
+
+  void onHit(){
+    current = FlyingCreatureState.hit;
   }
 }

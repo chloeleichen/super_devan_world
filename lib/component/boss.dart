@@ -57,7 +57,7 @@ class Boss<T extends FlameGame> extends SpriteAnimationGroupComponent
   @override
   Future<void> onLoad() async {
     _bossBound =
-    tiledMap.tileMap.getObjectGroupFromLayer('CBound').objects[0];
+    tiledMap.tileMap.getObjectGroupFromLayer('boss').objects[0];
 
     final left = await gameRef.loadSpriteAnimation(
       'boss/run-left.png',
@@ -194,20 +194,6 @@ class Boss<T extends FlameGame> extends SpriteAnimationGroupComponent
         current = BossState.attackRight;
       }
     }
-
-    if(other is Bullet){
-      if(other.position.x < position.x){
-        current = BossState.hitLeft;
-      } else{
-        current = BossState.hitRight;
-      }
-      if (_health > 0){
-        _health -=1;
-      } else{
-        _isDead = true;
-        current = BossState.dead;
-      }
-    }
   }
 
   @override
@@ -218,9 +204,6 @@ class Boss<T extends FlameGame> extends SpriteAnimationGroupComponent
     } else{
       if (other is Devan){
         _collisionActive = false;
-        current = BossState.idle;
-      }
-      if (other is Bullet){
         current = BossState.idle;
       }
     }

@@ -2,11 +2,12 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:super_devan_world/component/devan.dart';
 import 'package:super_devan_world/component/world_collidable.dart';
+import 'package:super_devan_world/helper/world_collidable_type.dart';
 import 'package:tiled/tiled.dart';
 
 class TombStone extends WorldCollidable{
   late  TextComponent _dialog;
-  TombStone(TiledObject obj): super(obj){
+  TombStone(TiledObject obj): super(obj, WorldCollidableType.tombstone){
     _dialog = TextComponent(
       text: (' Hi Devan!'),
       textRenderer: TextPaint(

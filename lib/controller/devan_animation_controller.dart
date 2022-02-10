@@ -20,6 +20,6 @@ class DevanActionController extends Component with HasGameRef {
       image: gameRef.images.fromCache('devan/movement/$action.png'),
       srcSize: Vector2(100, 100),
     );
-    return DevanAnimation(spriteSheet: spriteSheet, to:5);
+    return DevanAnimation(spriteSheet: spriteSheet, to:5, animationSpeed: 0.15);
   }
 }

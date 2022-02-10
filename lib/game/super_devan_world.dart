@@ -45,7 +45,6 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
       'heart.png',
       'map.png',
       'mushrooms.png',
-      'fruits.png',
       'skull/flying.png',
       'skull/hit.png',
       'devan/movement/attackSword.png',
@@ -74,8 +73,8 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
 
     add(_joystick);
 
-    // _creatureManager = CreatureManager();
-    // add(_creatureManager);
+    _creatureManager = CreatureManager();
+    add(_creatureManager);
 
     _rewardManager = RewardManager(_tiledMap);
     add(_rewardManager);
