@@ -45,6 +45,7 @@ flutter:
     - assets/images/bee/
     - assets/images/skull/
     - assets/images/boss/
+    - assets/images/devan/
     - assets/audio/
     - assets/tiles/map.tmx
 

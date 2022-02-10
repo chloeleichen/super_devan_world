@@ -15,7 +15,6 @@ import 'package:super_devan_world/game/reward_manager.dart';
 import 'package:super_devan_world/overlays/game_over_menu.dart';
 import 'package:super_devan_world/overlays/game_won.menu.dart';
 import 'package:throttling/throttling.dart';
-import '../component/bullet.dart';
 import '../component/command.dart';
 import '../component/world.dart';
 import '../component/devan.dart';
@@ -44,13 +43,16 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
     super.onLoad();
     await images.loadAll([
       'heart.png',
-      'player_spritesheet.png',
-      'bullet.png',
       'map.png',
       'mushrooms.png',
       'fruits.png',
       'skull/flying.png',
       'skull/hit.png',
+      'devan/walk.png',
+      'devan/run.png',
+      'devan/idle.png',
+      'devan/axe.png',
+      'devan/hammer.png',
     ]);
     final _tiledMap = await TiledComponent.load('map.tmx', Vector2.all(32));
     _world = World(_tiledMap);
@@ -67,8 +69,8 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
 
     add(_joystick);
 
-    _creatureManager = CreatureManager();
-    add(_creatureManager);
+    // _creatureManager = CreatureManager();
+    // add(_creatureManager);
 
     _rewardManager = RewardManager(_tiledMap);
     add(_rewardManager);
@@ -93,23 +95,6 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
   }
 
   @override
-  void onTapDown(int pointerId, TapDownInfo info){
-    super.onTapDown(pointerId, info);
-
-    if (isTappingOnJoystick(info.eventPosition.global)){
-      return;
-    }
-    Bullet bullet = Bullet(
-        direction: _player.direction,
-        position: _player.position,
-        sprite: Sprite(images.fromCache('bullet.png'))
-    );
-    bullet.anchor = Anchor.center;
-    add(bullet);
-    _deb.debounce(()=>_audioPlayer.playBulletSound());
-  }
-
-  @override
   void update(double dt){
     super.update(dt);
 
@@ -127,7 +112,6 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
   }
 
   void _gameOver(){
-    print('game over');
     HapticFeedback.vibrate();
     pauseEngine();
     if (_boss.health <=0){
@@ -163,9 +147,6 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
     // First reset player, flyingCreature manager and power-up manager .
     _player.reset();
     _audioPlayer.stopBgmMusic();
-    children.whereType<Bullet>().forEach((bullet) {
-      bullet.removeFromParent();
-    });
     _audioPlayer.startBgmMusic();
   }
 }
