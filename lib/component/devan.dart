@@ -107,10 +107,10 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
       }
 
       if(other is Mushroom && !other.size.isZero()){
-        _actionTimer.stop();
+        _actionTimer.reset();
         _movement = DevanMovement.take;
-        _actionTimer.start();
         other.getEaten();
+        audioPlayer.playEatSound();
         if (other.type == MushroomType.bad){
           _deb.debounce(hurt);
         } else if(other.type == MushroomType.good){
@@ -128,7 +128,6 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     _collisionActive = false;
     if(other is Mushroom && other.size.isZero()){
       other.reactivate();
-      audioPlayer.playEatSound();
     }
   }
 

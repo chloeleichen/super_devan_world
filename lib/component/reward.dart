@@ -26,7 +26,7 @@ class Reward extends SpriteComponent with HasHitboxes, Collidable{
     if (!_isActive){
       size = Vector2.all(0);
     }
-    addHitbox(HitboxCircle());
+    addHitbox(HitboxCircle(normalizedRadius: 1.3));
   }
 
   void _toggleState(){
