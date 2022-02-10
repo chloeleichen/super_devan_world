@@ -11,14 +11,14 @@ import 'package:super_devan_world/component/exp_bar.dart';
 import 'package:super_devan_world/component/health_bar.dart';
 import 'package:super_devan_world/component/joy_stick.dart';
 import 'package:super_devan_world/game/audio_player.dart';
-import 'package:super_devan_world/game/reward_manager.dart';
+import 'package:super_devan_world/controller/reward_manager.dart';
 import 'package:super_devan_world/overlays/game_over_menu.dart';
 import 'package:super_devan_world/overlays/game_won.menu.dart';
 import 'package:throttling/throttling.dart';
 import '../component/command.dart';
 import '../component/world.dart';
 import '../component/devan.dart';
-import 'creature_manager.dart';
+import '../controller/creature_manager.dart';
 
 class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappables{
   late final Devan _player;
@@ -48,11 +48,16 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
       'fruits.png',
       'skull/flying.png',
       'skull/hit.png',
-      'devan/walk.png',
-      'devan/run.png',
-      'devan/idle.png',
-      'devan/axe.png',
-      'devan/hammer.png',
+      'devan/movement/attackSword.png',
+      'devan/movement/carryIdle.png',
+      'devan/movement/carryWalk.png',
+      'devan/movement/climb.png',
+      'devan/movement/idle.png',
+      'devan/movement/jump.png',
+      'devan/movement/run.png',
+      'devan/movement/sit.png',
+      'devan/movement/take.png',
+      'devan/movement/walk.png',
     ]);
     final _tiledMap = await TiledComponent.load('map.tmx', Vector2.all(32));
     _world = World(_tiledMap);

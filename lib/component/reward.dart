@@ -20,7 +20,7 @@ class Reward extends SpriteComponent with HasHitboxes, Collidable{
     Vector2? position,
   }) : super( position: position, sprite:sprite) {
     collidableType = CollidableType.passive;
-    // debugMode = true;
+    //debugMode = true;
     _size = size;
     _timer = Timer(100, onTick: _toggleState, repeat: true);
     if (!_isActive){
@@ -61,28 +61,22 @@ class Reward extends SpriteComponent with HasHitboxes, Collidable{
     _timer.start();
   }
 
-  @override
-  void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
-    super.onCollision(intersectionPoints, other);
-    if(other is Devan && _isActive){
-        add(SizeEffect.to(
-          Vector2.all(0),
-          EffectController(duration: 0.15, curve: Curves.bounceInOut),
-        ));
-        _isActive = false;
+  void getEaten() {
+    if(!size.isZero()){
+      add(SizeEffect.to(
+        Vector2.all(0),
+        EffectController(duration: 0.15, curve: Curves.bounceInOut),
+      ));
     }
   }
 
-  @override
-  void onCollisionEnd(other){
-    super.onCollisionEnd(other);
-    if(other is Devan && !_isActive){
-      _isActive = true;
+  void reactivate() {
+    if(size == Vector2.zero()){
       add(SizeEffect.to(
-        _size,
-        DelayedEffectController(
-            EffectController(duration: 0.5, curve: Curves.bounceOut),
-            delay: (10 + random.nextInt(100)).toDouble())
+          _size,
+          DelayedEffectController(
+              EffectController(duration: 0.5, curve: Curves.bounceOut),
+              delay: (10 + random.nextInt(100)).toDouble())
       ));
     }
   }
