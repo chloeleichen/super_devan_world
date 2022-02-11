@@ -15,12 +15,14 @@ import 'package:super_devan_world/controller/reward_manager.dart';
 import 'package:super_devan_world/overlays/game_over_menu.dart';
 import 'package:super_devan_world/overlays/game_won.menu.dart';
 import 'package:throttling/throttling.dart';
+import '../component/action_button.dart';
 import '../component/command.dart';
 import '../component/world.dart';
 import '../component/devan.dart';
 import '../controller/creature_manager.dart';
 
-class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasTappables{
+class SuperDevanWorld extends FlameGame with
+    HasDraggables, HasCollidables, HasTappables, HasDraggables{
   late final Devan _player;
   late final CreatureManager _creatureManager;
   late final JoyStick _joystick;
@@ -31,7 +33,7 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
   late SpriteAnimationComponent animationComponent;
   late AudioPlayer _audioPlayer;
   late Boss _boss;
-  final _deb = Debouncing(duration: const Duration(milliseconds: 200));
+  late ActionButton _actionButton;
 
   final _commandList = List<Command>.empty(growable: true);
   final _addLaterCommandList = List<Command>.empty(growable: true);
@@ -47,6 +49,7 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
       'mushrooms.png',
       'skull/flying.png',
       'skull/hit.png',
+      'devan/actions.png',
       'devan/movement/attackSword.png',
       'devan/movement/axe.png',
       'devan/movement/carryIdle.png',
@@ -81,12 +84,12 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
     add(ScreenCollidable());
     _joystick = JoyStick();
     _player = Devan(_joystick, _audioPlayer);
+    _actionButton = ActionButton(_player);
+
     camera.followComponent(_player, worldBounds:
     Rect.fromLTRB(0, 0, _world.size.x, _world.size.y));
 
     add(_player);
-
-    add(_joystick);
 
     _creatureManager = CreatureManager();
     add(_creatureManager);
@@ -97,13 +100,15 @@ class SuperDevanWorld extends FlameGame with HasDraggables, HasCollidables, HasT
     _boss = Boss(_player, _tiledMap);
 
     add(_boss);
+    add(_joystick);
+
 
     _healthBar = HealthBar(_player);
     _expBar = ExpBar(_player);
     add(_healthBar);
     add(_expBar);
     timer = Timer(2, onTick: _gameOver, repeat: false);
-
+    add(_actionButton..anchor = Anchor.center);
   }
 
   bool isTappingOnJoystick(Vector2 position){

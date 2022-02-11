@@ -49,7 +49,12 @@ class DevanActionController extends Component with HasGameRef {
         speed: 0.05,
         directionIndex: [0, 1, 2, 3],
         to: 6
-
+    ),
+    AnimationData(
+        action: AnimatedAction.axe,
+        speed: 0.05,
+        directionIndex: [0, 0, 1, 2],
+        to: 6
     ),
     AnimationData(
         action: AnimatedAction.carryIdle,
@@ -73,6 +78,27 @@ class DevanActionController extends Component with HasGameRef {
     ),
 
     AnimationData(
+        action: AnimatedAction.dance,
+        speed: 0.05,
+        directionIndex: [0, 0, 0, 0],
+        to: 13
+    ),
+
+    AnimationData(
+        action: AnimatedAction.die,
+        speed: 0.15,
+        directionIndex: [0, 0, 0, 0],
+        to: 18
+    ),
+
+    AnimationData(
+        action: AnimatedAction.dig,
+        speed: 0.15,
+        directionIndex: [0, 0, 1, 2],
+        to: 12
+    ),
+
+    AnimationData(
         action: AnimatedAction.idle,
         speed: 0.15,
         directionIndex: [0, 1, 2, 3],
@@ -87,10 +113,52 @@ class DevanActionController extends Component with HasGameRef {
     ),
 
     AnimationData(
+        action: AnimatedAction.kiss,
+        speed: 0.15,
+        directionIndex: [0, 0, 1, 2],
+        to: 11
+    ),
+
+    AnimationData(
+        action: AnimatedAction.make,
+        speed: 0.15,
+        directionIndex: [0, 0, 1, 2],
+        to: 5
+    ),
+
+    AnimationData(
+        action: AnimatedAction.pickaxe,
+        speed: 0.15,
+        directionIndex: [0, 0, 1, 2],
+        to: 6
+    ),
+
+    AnimationData(
+        action: AnimatedAction.playGuitar,
+        speed: 0.15,
+        directionIndex: [0, 0, 1, 1],
+        to: 10
+    ),
+
+    AnimationData(
+        action: AnimatedAction.read,
+        speed: 0.15,
+        directionIndex: [0, 0, 1, 2],
+        to: 9
+    ),
+
+    AnimationData(
         action: AnimatedAction.run,
         speed: 0.05,
         directionIndex: [0, 1, 2, 3],
       to: 7
+    ),
+
+    AnimationData(
+        action: AnimatedAction.showSword,
+        speed: 0.15,
+        directionIndex: [0, 0, 0, 0],
+        to: 4
     ),
     AnimationData(
         action: AnimatedAction.sit,
@@ -98,6 +166,14 @@ class DevanActionController extends Component with HasGameRef {
         directionIndex: [0, 1, 2, 3],
       to: 7
     ),
+
+    AnimationData(
+        action: AnimatedAction.sweep,
+        speed: 0.15,
+        directionIndex: [0, 1, 2, 3],
+        to: 7
+    ),
+
     AnimationData(
         action: AnimatedAction.take,
         speed: 0.05,
@@ -109,6 +185,13 @@ class DevanActionController extends Component with HasGameRef {
         speed: 0.15,
         directionIndex: [0, 1, 2, 3],
       to: 7
+    ),
+
+    AnimationData(
+        action: AnimatedAction.water,
+        speed: 0.15,
+        directionIndex: [0, 0, 1, 2],
+        to: 5
     ),
   ];
 }

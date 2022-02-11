@@ -3,7 +3,6 @@ import 'package:flame/effects.dart';
 import 'package:flame/game.dart';
 import 'package:flame/geometry.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:super_devan_world/component/boss.dart';
 import 'package:super_devan_world/component/flying_creature.dart';
 import 'package:super_devan_world/component/mushroom.dart';
@@ -83,6 +82,14 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
         }
         else if(other.type == WorldCollidableType.climb){
           _action = AnimatedAction.climb;
+        } else if(other.type == WorldCollidableType.fountain){
+          _collisionActive = true;
+          bounceOff();
+          _action = AnimatedAction.water;
+        } else if(other.type == WorldCollidableType.roadSign){
+          _collisionActive = true;
+          bounceOff();
+          _action = AnimatedAction.dance;
         }
         else{
           _action = AnimatedAction.idle;
@@ -93,15 +100,12 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
 
       if (other is FlyingCreature){
         other.onHit();
-        if(other.type == CreatureType.skull && _canMultiTask(_action)){
-          _action = AnimatedAction.attackSword;
-          _thr.throttle(()=>audioPlayer.playSwordSound());
+        if(other.type == CreatureType.skull){
+          _deb.debounce(hurt);
         }
       }
       if(other is Boss){
-        _action = AnimatedAction.attackSword;
-          _thr.throttle(()=>audioPlayer.playSwordSound());
-          // _thrFast.throttle(hurt);
+          _thrFast.throttle(hurt);
       }
       if(other is Mushroom && !other.size.isZero()){
         if(!_canMultiTask(_action)){
@@ -139,7 +143,6 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     }
     return false;
   }
-
 
   void mushroomEffect(){
     gameRef.camera.shake(duration: 1, intensity: 3);
@@ -197,7 +200,6 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     if(_collisionActive){
       return;
     }
-
     if (_health <= 0){
       _action = AnimatedAction.die;
     } else if(joystick.direction != JoystickDirection.idle){
@@ -258,7 +260,6 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   void addToExp(int points){
     _exp += points;
   }
-
   void reset() {
     _exp = 0;
     angle = 0;
@@ -266,5 +267,25 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     position = Vector2(initX, initY);
     _lastValidPosition = Vector2(initX, initX);
     _collisionActive = false;
+  }
+
+  void useAxe(){
+    _action = AnimatedAction.axe;
+  }
+
+  void useHammer(){
+    _action = AnimatedAction.hammer;
+  }
+
+  void usePickaxe(){
+    _action = AnimatedAction.pickaxe;
+  }
+
+  void useFlower(){
+    _action = AnimatedAction.flower;
+  }
+
+  void resetAction(){
+    _action = AnimatedAction.idle;
   }
 }
