@@ -6,11 +6,12 @@ class DevanAnimation {
   DevanAnimation({
     required SpriteSheet spriteSheet,
     required int to,
-    required animationSpeed
+    required double speed,
+    required List<int> directionIndex
   }) : super() {
     direction = {for (var dir in Direction.values)
       dir: spriteSheet.createAnimation(
-          row: dir.index, stepTime: animationSpeed)
+          row: directionIndex[dir.index], stepTime: speed)
     };
   }
 }

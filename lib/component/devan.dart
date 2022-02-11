@@ -10,13 +10,13 @@ import 'package:super_devan_world/component/mushroom.dart';
 import 'package:super_devan_world/component/world_collidable.dart';
 import 'package:super_devan_world/game/audio_player.dart';
 import 'package:super_devan_world/helper/creature_type.dart';
-import 'package:super_devan_world/helper/devan_movement.dart';
 import 'package:super_devan_world/helper/direction.dart';
 import 'package:super_devan_world/helper/mushroom_type.dart';
 import 'package:super_devan_world/helper/world_collidable_type.dart';
 import 'package:throttling/throttling.dart';
 
 import '../controller/devan_animation_controller.dart';
+import '../helper/animated_action.dart';
 const int leftIndex = 1;
 const int rightIndex = 3;
 const int upIndex = 2;
@@ -34,7 +34,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   final _deb = Debouncing(duration: const Duration(milliseconds: 500));
   final _thr = Throttling(duration: const Duration(seconds: 1));
   final _thrFast = Throttling(duration: const Duration(milliseconds: 500));
-  late final Timer _actionTimer = Timer(0.6, onTick: _resetMovement, repeat: true);
+  late final Timer _actionTimer = Timer(0.3, onTick: _resetMovement, repeat: true);
 
   bool _collisionActive = false;
   final double _runningThreshold = 0.7;
@@ -42,7 +42,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   Direction _direction = Direction.down;
   int _health = maxHealth;
   int _exp = 0;
-  late DevanMovement _movement;
+  late AnimatedAction _action;
 
   int get exp => _exp;
   int get health => _health;
@@ -64,54 +64,52 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   Future<void> onLoad() async {
     _devanActionController = DevanActionController();
     add(_devanActionController);
-    _movement = DevanMovement.idle;
-    animation = _devanActionController.animations[_movement]?.direction[Direction.up];
+    _action = AnimatedAction.idle;
+    animation = _devanActionController.animations[_action]?.direction[Direction.up];
     super.onLoad();
   }
 
   @override
   onCollision(Set<Vector2> intersectionPoints, Collidable other)  {
     super.onCollision(intersectionPoints, other);
-    if (_health <=0){
-      return;
-    }
       if(other is ScreenCollidable){
-        _movement = DevanMovement.idle;
+        _action = AnimatedAction.idle;
         _collisionActive = true;
         bounceOff();
       }
 
       if(other is WorldCollidable){
         if(other.type == WorldCollidableType.jump){
-          _movement = DevanMovement.jump;
+          _action = AnimatedAction.jump;
         }
         else if(other.type == WorldCollidableType.climb){
-          _movement = DevanMovement.climb;
+          _action = AnimatedAction.climb;
         }
         else{
-          _movement = DevanMovement.idle;
+          _action = AnimatedAction.idle;
           _collisionActive = true;
           bounceOff();
         }
       }
 
       if (other is FlyingCreature){
-        _movement = DevanMovement.attackSword;
         other.onHit();
-        if(other.type == CreatureType.skull ){
-          // _deb.debounce(hurt);
+        if(other.type == CreatureType.skull && _canMultiTask(_action)){
+          _action = AnimatedAction.attackSword;
           _thr.throttle(()=>audioPlayer.playSwordSound());
         }
       }
       if(other is Boss){
-        _movement = DevanMovement.attackSword;
+        _action = AnimatedAction.attackSword;
           _thr.throttle(()=>audioPlayer.playSwordSound());
           // _thrFast.throttle(hurt);
       }
-
       if(other is Mushroom && !other.size.isZero()){
+        if(!_canMultiTask(_action)){
+          return;
+        }
         _actionTimer.reset();
-        _movement = DevanMovement.take;
+        _action = AnimatedAction.take;
         other.getEaten();
         audioPlayer.playEatSound();
         if (other.type == MushroomType.bad){
@@ -122,7 +120,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
           _deb.debounce(mushroomEffect);
         }
       }
-    animation = _devanActionController.animations[_movement]?.direction[_direction];
+    animation = _devanActionController.animations[_action]?.direction[_direction];
   }
 
   @override
@@ -134,8 +132,16 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     }
   }
 
+  bool _canMultiTask(AnimatedAction action){
+    if (action == AnimatedAction.run ||
+        action == AnimatedAction.walk ||
+        action == AnimatedAction.idle){
+      return true;
+    }
+    return false;
+  }
   void _resetMovement(){
-    _movement = DevanMovement.idle;
+    _action = AnimatedAction.idle;
   }
 
   void mushroomEffect(){
@@ -183,35 +189,37 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     }
   }
 
-
-
   void bounceOff() {
     position = _lastValidPosition;
     _lastValidPosition = Vector2(position.x, position.y);
   }
+
   @override
   void update(double dt) {
     super.update(dt);
     _actionTimer.update(dt);
-    if(_collisionActive || _health <= 0){
+    if(_collisionActive){
       return;
     }
-    if(joystick.direction != JoystickDirection.idle){
+
+    if (_health <= 0){
+      _action = AnimatedAction.die;
+    } else if(joystick.direction != JoystickDirection.idle){
       movePlayer(dt);
     } else{
-      if (_movement == DevanMovement.walk || _movement == DevanMovement.run ){
-        _movement = DevanMovement.idle;
+      if (_action == AnimatedAction.walk || _action == AnimatedAction.run ){
+        _action = AnimatedAction.idle;
       }
     }
-    animation = _devanActionController.animations[_movement]?.direction[_direction];
+    animation = _devanActionController.animations[_action]?.direction[_direction];
   }
 
   void movePlayer(double dt){
     _lastValidPosition = Vector2(position.x, position.y);
       Vector2 velocity = Vector2(0, 0);
       double speed = joystick.relativeDelta.length;
-      if(_movement == DevanMovement.idle){
-        _movement = speed >= _runningThreshold ? DevanMovement.run : DevanMovement.walk;
+      if(_action == AnimatedAction.idle){
+        _action = speed >= _runningThreshold ? AnimatedAction.run : AnimatedAction.walk;
       }
       switch(joystick.direction){
         case JoystickDirection.down:
@@ -247,7 +255,8 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
           velocity = Vector2(-speed, speed);
           break;
       }
-      position.add(velocity * 150 * dt);
+      final double playerSpeed = _action == AnimatedAction.run ? 200: 150;
+      position.add(velocity * playerSpeed * dt);
   }
 
   void addToExp(int points){
