@@ -284,6 +284,21 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   void useFlower(){
     _action = AnimatedAction.flower;
   }
+  void useSweep(){
+    _action = AnimatedAction.sweep;
+  }
+  void useWater(){
+    _action = AnimatedAction.water;
+  }
+  void useDig(){
+    _action = AnimatedAction.dig;
+  }
+  void useKiss(){
+    _action = AnimatedAction.kiss;
+  }
+  void useSword(){
+    _action = AnimatedAction.attackSword;
+  }
 
   void resetAction(){
     _action = AnimatedAction.idle;

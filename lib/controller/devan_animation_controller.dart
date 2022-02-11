@@ -99,6 +99,25 @@ class DevanActionController extends Component with HasGameRef {
     ),
 
     AnimationData(
+        action: AnimatedAction.flower,
+        speed: 0.1,
+        directionIndex: [0, 0, 1, 2],
+        to: 12
+    ),
+    AnimationData(
+        action: AnimatedAction.hammer,
+        speed: 0.1,
+        directionIndex: [0, 0, 1, 2],
+        to: 6
+    ),
+    AnimationData(
+        action: AnimatedAction.hello,
+        speed: 0.15,
+        directionIndex: [0, 0, 1, 2],
+        to: 3
+    ),
+
+    AnimationData(
         action: AnimatedAction.idle,
         speed: 0.15,
         directionIndex: [0, 1, 2, 3],
@@ -128,7 +147,7 @@ class DevanActionController extends Component with HasGameRef {
 
     AnimationData(
         action: AnimatedAction.pickaxe,
-        speed: 0.15,
+        speed: 0.1,
         directionIndex: [0, 0, 1, 2],
         to: 6
     ),
