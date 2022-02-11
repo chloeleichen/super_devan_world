@@ -34,7 +34,6 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   final _deb = Debouncing(duration: const Duration(milliseconds: 500));
   final _thr = Throttling(duration: const Duration(seconds: 1));
   final _thrFast = Throttling(duration: const Duration(milliseconds: 500));
-  late final Timer _actionTimer = Timer(0.3, onTick: _resetMovement, repeat: true);
 
   bool _collisionActive = false;
   final double _runningThreshold = 0.7;
@@ -108,7 +107,6 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
         if(!_canMultiTask(_action)){
           return;
         }
-        _actionTimer.reset();
         _action = AnimatedAction.take;
         other.getEaten();
         audioPlayer.playEatSound();
@@ -127,6 +125,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   void onCollisionEnd(Collidable other) {
     super.onCollisionEnd(other);
     _collisionActive = false;
+    _action = AnimatedAction.idle;
     if(other is Mushroom && other.size.isZero()){
       other.reactivate();
     }
@@ -140,9 +139,7 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     }
     return false;
   }
-  void _resetMovement(){
-    _action = AnimatedAction.idle;
-  }
+
 
   void mushroomEffect(){
     gameRef.camera.shake(duration: 1, intensity: 3);
@@ -197,7 +194,6 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
   @override
   void update(double dt) {
     super.update(dt);
-    _actionTimer.update(dt);
     if(_collisionActive){
       return;
     }
