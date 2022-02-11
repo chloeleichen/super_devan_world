@@ -16,8 +16,8 @@ class ActionButton extends HudMarginComponent with Tappable, Draggable {
   ActionButton(this.player)
       : super(
     margin: const EdgeInsets.only(
-      left: 20,
-      bottom: 50,
+      left: 30,
+      bottom: 30,
     ),
     position: Vector2(0, 0),
     size: Vector2.all(50),

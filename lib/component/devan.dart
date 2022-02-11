@@ -216,7 +216,9 @@ class Devan<T extends FlameGame> extends SpriteAnimationComponent
     _lastValidPosition = Vector2(position.x, position.y);
       Vector2 velocity = Vector2(0, 0);
       double speed = joystick.relativeDelta.length;
-      if(_action == AnimatedAction.idle){
+      if(_action == AnimatedAction.idle
+          || _action == AnimatedAction.run
+          || _action == AnimatedAction.walk){
         _action = speed >= _runningThreshold ? AnimatedAction.run : AnimatedAction.walk;
       }
       switch(joystick.direction){
